@@ -1,17 +1,14 @@
 import "./appCompCss/defaultAuthenticationCss.css"
 import FormInput from "../uiComponents/FormInput";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 
-const Register = () => {
+const Login = () => {
 
     const formFields = [
-        { icon: faUser, type: 'text', placeholder: 'Name' },
         { icon: faEnvelope, type: 'text', placeholder: 'Email' },
-        { icon: faLock, type: 'password', placeholder: 'Password' },
-        { icon: faLock, type: 'password', placeholder: 'Confirm Password' },
+        { icon: faLock, type: 'password', placeholder: 'Password' },  
     ];
 
     const renderFormField = (field, index) => (
@@ -22,14 +19,14 @@ const Register = () => {
     );
 
     return (
-        <div className = "registerPanel">
-            <h1>Register</h1>
+        <div className = "loginPanel">
+            <h1>Login</h1>
             <form>
                 {formFields.map(renderFormField)}
-                <button>Submit</button> 
+                <button>Login</button> 
             </form>
         </div>
     )
 }
 
-export default Register;
+export default Login;
