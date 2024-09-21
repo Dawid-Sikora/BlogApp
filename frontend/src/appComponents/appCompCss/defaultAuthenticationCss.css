@@ -19,8 +19,11 @@ h1 {
     margin-bottom: 10px;
 }
 
-.inputField{
+.validationComponent{
     margin: 10px 0px;
+}
+
+.inputField{
     border-bottom: 2px solid #999;
     display: flex;
     align-items: center;
@@ -61,4 +64,20 @@ button:hover {
     color: #333;
     border: none;
     background: #999;
+}
+
+.errorText {
+    display: table-column;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    margin: 0;
+    background: rgb(158, 119, 119);
+    color: rgb(61, 25, 25);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.errorText.show {
+    display: block;
+    opacity: 1;
 }

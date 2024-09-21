@@ -9,7 +9,7 @@ import com.app.blog.security.jwt.JwtUtils;
 import com.app.blog.security.services.UserDetailsImpl;
 import com.app.blog.web.request.LoginRequest;
 import com.app.blog.web.request.SignupRequest;
-import com.app.blog.web.response.MessageResponse;
+import com.app.blog.web.response.MessageResponseHandler;
 import com.app.blog.web.response.JwtResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -65,9 +66,18 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest, BindingResult bindingResult) {
+
+        // fields validation
+        if(bindingResult.hasErrors()){
+            StringBuilder errorResponse = MessageResponseHandler.generateFieldValidationError(bindingResult);
+            return ResponseEntity.badRequest().body(errorResponse.toString());
+        }
+
+        // email already in use validation
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+            StringBuilder errorResponse = MessageResponseHandler.generateEmailInUseError();
+            return ResponseEntity.badRequest().body(errorResponse.toString());
         }
 
         // Create new user's account
@@ -88,7 +98,7 @@ public class AuthController {
 
         user.setRoles(roles);
         userRepository.save(user);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.ok(MessageResponseHandler.REGISTRATION_SUCCESS_MESSAGE);
     }
 
     private Set<Role> getRoles(Set<String> strRoles) {
