@@ -2,9 +2,9 @@ package com.app.blog.web.response;
 
 import com.app.blog.web.request.UIConstants;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MessageResponseHandler {
 
@@ -12,20 +12,35 @@ public class MessageResponseHandler {
 
     public static final String REGISTRATION_SUCCESS_MESSAGE = "User registered successfully!";
 
+    public static final String CONFIRM_PASSWORD_FIELD_MESSAGE = "Passwords do not match!";
+
     // generates error response based on fields validation.
-    public static StringBuilder generateFieldValidationError(BindingResult bindingResult) {
-        StringBuilder errorMessage = new StringBuilder();
-        bindingResult.getFieldErrors().forEach(error ->
-                errorMessage.append(error.getField()).append(": ").append(error.getDefaultMessage()).append("; ")
-        );
-        return errorMessage;
+    public static  Map<String, String> generateFieldValidationErrors(BindingResult bindingResult) {
+        Map<String, String> errors = new HashMap<>();
+        bindingResult.getFieldErrors().forEach(error -> {
+            errors.put(error.getField(), error.getDefaultMessage());
+        });
+        return errors;
     }
 
     // generates error response for email already in use case.
-    public static StringBuilder generateEmailInUseError() {
-        StringBuilder errorMessage = new StringBuilder();
-        errorMessage.append(UIConstants.EMAIL_FIELD).append(": ").append(EMAIL_IN_USE_MESSAGE).append("; ");
-        return errorMessage;
+    public static Map<String, String> generateEmailInUseError() {
+        Map<String, String> errors = new HashMap<>();
+        errors.put(UIConstants.EMAIL_FIELD, EMAIL_IN_USE_MESSAGE);
+        return errors;
     }
 
+    // generates error response for not matching passwords.
+    public static Map<String, String> generateConfirmPasswordError() {
+        Map<String, String> errors = new HashMap<>();
+        errors.put(UIConstants.CONFIRM_PASSWORD_FIELD, CONFIRM_PASSWORD_FIELD_MESSAGE);
+        return errors;
+    }
+
+    // generates error response for not matching passwords.
+    public static Map<String, String> generateRegistrationSuccessMessage() {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message", REGISTRATION_SUCCESS_MESSAGE);
+        return errors;
+    }
 }

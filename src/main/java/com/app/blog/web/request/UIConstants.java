@@ -11,4 +11,6 @@ public class UIConstants {
 
     public static final String PASSWORD_FIELD = "password";
 
+    public static final String CONFIRM_PASSWORD_FIELD = "confirmPassword";
+
 }

@@ -1,8 +1,8 @@
 package com.app.blog.controllers;
 
 import com.app.blog.dataBase.models.Roles;
-import com.app.blog.dataBase.models.User;
 import com.app.blog.dataBase.models.Role;
+import com.app.blog.dataBase.models.User;
 import com.app.blog.dataBase.repositories.RoleRepository;
 import com.app.blog.dataBase.repositories.UserRepository;
 import com.app.blog.security.jwt.JwtUtils;
@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,16 +69,22 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest, BindingResult bindingResult) {
 
-        // fields validation
+        // fields validation, must be first to check if password is not empty
         if(bindingResult.hasErrors()){
-            StringBuilder errorResponse = MessageResponseHandler.generateFieldValidationError(bindingResult);
-            return ResponseEntity.badRequest().body(errorResponse.toString());
+            Map<String, String> errors = MessageResponseHandler.generateFieldValidationErrors(bindingResult);
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        // confirm password and password match
+        if(!signUpRequest.getPassword().equals(signUpRequest.getConfirmPassword())){
+            Map<String, String> errors = MessageResponseHandler.generateConfirmPasswordError();
+            return ResponseEntity.badRequest().body(errors);
         }
 
         // email already in use validation
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            StringBuilder errorResponse = MessageResponseHandler.generateEmailInUseError();
-            return ResponseEntity.badRequest().body(errorResponse.toString());
+            Map<String, String> errors = MessageResponseHandler.generateEmailInUseError();
+            return ResponseEntity.badRequest().body(errors);
         }
 
         // Create new user's account
@@ -98,7 +105,8 @@ public class AuthController {
 
         user.setRoles(roles);
         userRepository.save(user);
-        return ResponseEntity.ok(MessageResponseHandler.REGISTRATION_SUCCESS_MESSAGE);
+
+        return ResponseEntity.ok(MessageResponseHandler.generateRegistrationSuccessMessage());
     }
 
     private Set<Role> getRoles(Set<String> strRoles) {

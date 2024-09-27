@@ -11,7 +11,7 @@ public class SignupRequest {
     @Size(min = 3, max = 20, message = "The username must be between 3 and 20 characters.")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "Email is required.")
     @Size(max = 50)
     @Email(message = "This is not a valid email.")
     private String email;
@@ -21,6 +21,9 @@ public class SignupRequest {
     @NotBlank(message = "Password is required.")
     @Size(min = 6, max = 40, message = "The password must be between 6 and 40 characters.")
     private String password;
+
+    @NotBlank(message = "This field is required.")
+    private String confirmPassword;
 
     public String getUsername() {
         return username;
@@ -44,6 +47,14 @@ public class SignupRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 
     public Set<String> getRole() {
