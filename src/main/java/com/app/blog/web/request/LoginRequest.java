@@ -3,10 +3,10 @@ package com.app.blog.web.request;
 import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequest {
-    @NotBlank
+    @NotBlank(message = "Username is required.")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Password is required.")
     private String password;
 
     public String getEmail() {

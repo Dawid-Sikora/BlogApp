@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,11 +50,29 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
-    @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) {
 
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        // fields validation
+        if(bindingResult.hasErrors()){
+            Map<String, String> errors = MessageResponseHandler.generateFieldValidationErrors(bindingResult);
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        // is user exists
+        if (!userRepository.existsByEmail(loginRequest.getEmail())) {
+            Map<String, String> errors = MessageResponseHandler.generateUserWithEmailNotExists();
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        Authentication authentication;
+        try {
+            authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+
+        } catch (BadCredentialsException e){
+            return ResponseEntity.badRequest().body(MessageResponseHandler.generateBadCredentialsMessage());
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -64,6 +83,7 @@ public class AuthController {
 
         return ResponseEntity
                 .ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+
     }
 
     @PostMapping("/signup")

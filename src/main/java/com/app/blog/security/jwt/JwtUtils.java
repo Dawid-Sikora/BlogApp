@@ -36,7 +36,6 @@ public class JwtUtils {
                 .expiration(new Date(actualDate.getTime() + jwtExpirationMs))
                 .signWith(getKey())
                 .compact();
-
     }
 
     private Key getKey() {

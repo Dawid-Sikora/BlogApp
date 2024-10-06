@@ -28,9 +28,9 @@ const Register = () => {
                     <FontAwesomeIcon className="iconStyle" icon={field.icon} />
                     <FormInput name={field.name} type={field.type} placeholder={field.placeholder} />
                 </div>
-                    <p className={`errorText ${errorMessage ? 'show' : ''}`}>
-                        {errorMessage}
-                    </p>
+                <p className={`errorText ${errorMessage ? 'show' : ''}`}>
+                    {errorMessage}
+                </p>
             </div>              
         );
     }
