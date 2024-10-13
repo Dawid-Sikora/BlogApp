@@ -4,10 +4,16 @@ import {
     REGISTER_FAIL,
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
-    LOGIN_FAIL
+    LOGIN_FAIL,
+    LOGOUT_REQUEST,
+    LOGOUT_SUCCESS,
+    LOGOUT_FAIL,
+    CHECK_SUCCESS,
+    CHECK_FAIL,
+    CHECK_REQUEST,
 } from "./types.js";
 
-const API_URL = "http://localhost:8080/api/auth/";
+const API_URL = "https://localhost:443/api/auth/";
 
 export const registerUser = (userData) => {
     return async (dispatch) => {
@@ -15,11 +21,12 @@ export const registerUser = (userData) => {
         dispatch({ type: REGISTER_REQUEST });
 
         try {
-            const response = await fetch(API_URL + 'signup', {
+            const response = await fetch(API_URL + 'register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include', 
                 body: JSON.stringify(userData)
             });
 
@@ -48,8 +55,9 @@ export const loginUser = (userData) => {
             const response = await fetch(API_URL + 'login', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
+                credentials: 'include', 
                 body: JSON.stringify(userData)
             });
 
@@ -62,8 +70,6 @@ export const loginUser = (userData) => {
 
             dispatch({ type: LOGIN_SUCCESS, payload: data });
 
-            //localStorage.setItem('userInfo', JSON.stringify(data));
-
         } catch (error) {
             dispatch({ type: LOGIN_FAIL, payload: error.message });
         }
@@ -71,4 +77,58 @@ export const loginUser = (userData) => {
     }
 };
 
+export const logoutUser = () => {
+    return async (dispatch) => {
 
+        dispatch({ type: LOGOUT_REQUEST });
+
+        try {
+            const response = await fetch(API_URL + 'logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                dispatch({ type: LOGOUT_FAIL });
+                return;
+            }
+
+            dispatch({ type: LOGOUT_SUCCESS });
+
+        } catch (error) {
+            dispatch({ type: LOGOUT_FAIL, payload: error.message });
+        }
+
+    }
+};
+
+export const checkUser = () => {
+    return async (dispatch) => {
+
+        dispatch({ type: CHECK_REQUEST });
+
+        try {
+            const response = await fetch(API_URL + 'check', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include', 
+            });
+
+            if (!response.ok) {
+                dispatch({ type: CHECK_FAIL });
+                return;
+            }
+
+            dispatch({ type: CHECK_SUCCESS });
+
+        } catch (error) {
+            dispatch({ type: CHECK_FAIL, payload: error.message });
+        }
+
+    }
+};

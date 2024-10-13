@@ -4,14 +4,20 @@ import {
     REGISTER_FAIL,
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
-    LOGIN_FAIL
+    LOGIN_FAIL,
+    LOGOUT_REQUEST,
+    LOGOUT_SUCCESS,
+    LOGOUT_FAIL,
+    CHECK_REQUEST,
+    CHECK_SUCCESS,
+    CHECK_FAIL
 } from "../actions/types.js";
 
 const initialState = {
-    loading: false,
+    loading: null,
     serverErrors: null,
     isRegisterSuccess: false,
-    userInfo: null 
+    isLogin: false,
 };
 
 const authReducer = (state = initialState, action) => {
@@ -49,15 +55,60 @@ const authReducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 serverErrors: null,
-                userInfo: action.payload 
+                isLogin: true
             };
         case LOGIN_FAIL:
             return {
                 ...state,
                 loading: false,
                 serverErrors: action.payload,
-                userInfo: null 
+                isLogin: false 
             };    
+
+        case LOGOUT_REQUEST:
+            return {
+                ...state,
+                loading: true,
+                serverErrors: null,
+            };
+        case LOGOUT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                serverErrors: null,
+                isLogin: false
+            };
+        case LOGOUT_FAIL:
+            return {
+                ...state,
+                loading: false,
+                serverErrors: action.payload,
+                isLogin: false 
+            };  
+
+        case CHECK_REQUEST:
+            return {
+                ...state,
+                loading: true,
+                serverErrors: null,
+                isLogin: false
+            };    
+
+        case CHECK_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                serverErrors: action.payload,
+                isLogin: true 
+            };
+
+        case CHECK_FAIL:
+            return {
+                ...state,
+                loading: false,
+                serverErrors: action.payload,
+                isLogin: false 
+        };
 
         default:
             return state;

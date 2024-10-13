@@ -4,6 +4,8 @@ import com.app.blog.security.services.UserDetailsImpl;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,5 +64,18 @@ public class JwtUtils {
             logger.error("Error during JWT token validation: {}", e.getMessage());
         }
         return false;
+    }
+
+    public String parseJwt(HttpServletRequest request) {
+        String jwt = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("jwt")) {
+                    jwt = cookie.getValue();
+                }
+            }
+        }
+
+        return jwt;
     }
 }

@@ -11,8 +11,13 @@ import com.app.blog.web.request.LoginRequest;
 import com.app.blog.web.request.SignupRequest;
 import com.app.blog.web.response.MessageResponseHandler;
 import com.app.blog.web.response.JwtResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -51,7 +56,7 @@ public class AuthController {
     JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult, HttpServletResponse response) {
 
         // fields validation
         if(bindingResult.hasErrors()){
@@ -77,16 +82,18 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
+        // add cookie to the response
+        handleCookie(response, jwt,3600);
+
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         return ResponseEntity
-                .ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
-
+                .ok(new JwtResponse("Don't send a token", userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest, BindingResult bindingResult) {
 
         // fields validation, must be first to check if password is not empty
@@ -129,6 +136,23 @@ public class AuthController {
         return ResponseEntity.ok(MessageResponseHandler.generateRegistrationSuccessMessage());
     }
 
+    @GetMapping("/check")
+    public ResponseEntity<?> checkAuthentication(HttpServletRequest request) {
+        String jwt = jwtUtils.parseJwt(request);
+
+        if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpServletResponse response) {
+        handleCookie(response, "",0);
+        return ResponseEntity.ok("User logout success.");
+    }
+
     private Set<Role> getRoles(Set<String> strRoles) {
         Set<Role> newRoles = new HashSet<>();
         strRoles.forEach(role -> {
@@ -145,4 +169,15 @@ public class AuthController {
         return newRoles;
     }
 
+    private void handleCookie(HttpServletResponse response, String jwt, long maxAge){
+        ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(maxAge)
+                .sameSite("None")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
 }

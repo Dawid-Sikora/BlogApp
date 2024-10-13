@@ -14,7 +14,7 @@ const Login = () => {
 
     const dispatch = useDispatch();
 
-    const { serverErrors, loading, userInfo } = useSelector((state) => state.auth);
+    const { serverErrors, loading, isLogin } = useSelector((state) => state.auth);
 
     const formFields = [
         { icon: faEnvelope, name:'email', type: 'text', placeholder: 'Email', errorKey: 'email'},
@@ -52,10 +52,10 @@ const Login = () => {
 
     //navigate to main after success login
     useEffect(() => {
-        if (userInfo != null) {
+        if (!loading && isLogin) {
             naviate('/main');
         }
-    }, [userInfo, naviate]);
+    }, [loading, isLogin, naviate]);
     
     return (
         <div className = "loginPanel">
