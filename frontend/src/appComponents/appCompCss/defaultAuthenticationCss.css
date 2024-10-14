@@ -9,10 +9,11 @@
     justify-content: center;
 }
 
-.successPanel p {
+.successPanel .successMessage {
     background-color: #a4baa9; 
-    color: #155724;            
-    padding: 10px 20px;        
+    color: #155724;  
+    margin-top: 0px;          
+    padding: 0px 20px;        
     border: 1px solid #718475; 
     border-radius: 8px;        
     font-size: 16px;
@@ -102,4 +103,20 @@ button.loading {
 .errorText.show {
     display: block;
     opacity: 1;
+}
+
+.prompt {
+    color: #999;
+    font-size: 0.9em;
+    margin-top: 0px;
+}
+
+.link {
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.link:hover {
+    color: #d0d0d0;
 }

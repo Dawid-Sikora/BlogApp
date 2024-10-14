@@ -2,6 +2,7 @@ import {
     REGISTER_REQUEST,
     REGISTER_SUCCESS,
     REGISTER_FAIL,
+    RESET_REGISTER,
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
     LOGIN_FAIL,
@@ -41,6 +42,12 @@ const authReducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 serverErrors: action.payload,
+                isRegisterSuccess: false
+            };
+
+        case RESET_REGISTER:
+            return {
+                ...state,
                 isRegisterSuccess: false
             };
 

@@ -2,6 +2,7 @@ import {
     REGISTER_REQUEST,
     REGISTER_SUCCESS,
     REGISTER_FAIL,
+    RESET_REGISTER,
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
     LOGIN_FAIL,
@@ -45,6 +46,12 @@ export const registerUser = (userData) => {
     }
 
 };
+
+export const resetRegister = () => {
+    return async (dispatch) => {
+        dispatch({ type: RESET_REGISTER });
+    }
+}
 
 export const loginUser = (userData) => {
     return async (dispatch) => {

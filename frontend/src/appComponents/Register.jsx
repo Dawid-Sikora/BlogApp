@@ -1,5 +1,6 @@
 import "./appCompCss/defaultAuthenticationCss.css"
 import FormInput from "../uiComponents/FormInput";
+import NavigatePrompt from "../uiComponents/NavigatePrompt";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
@@ -7,8 +8,11 @@ import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { registerUser } from './redux/actions/authActions';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+    const navigate = useNavigate();
+
     const dispatch = useDispatch();
 
     const { serverErrors, loading, isRegisterSuccess } = useSelector((state) => state.auth);
@@ -51,12 +55,23 @@ const Register = () => {
         dispatch(registerUser(formData));
     };
 
+    const navigateToLogin = () => {
+        navigate('/login');
+    };
+
     if (isRegisterSuccess) {
         return (
-            <div className="successPanel">
-                <h1>Registration Successful!</h1>
-                <p>You have successfully registered your account.</p>
-            </div>
+                <div className="successPanel">
+                    <h1>Registration Successful!</h1>
+                    <div className="successMessage">
+                        <p>You have successfully registered your account.</p>
+                    </div>
+                    <NavigatePrompt 
+                        promptText="" 
+                        linkText="Login" 
+                        onClick={navigateToLogin}
+                    />
+                </div>
         );
     }
 
@@ -69,6 +84,11 @@ const Register = () => {
                     {loading ? 'Submitting...' : 'Submit'}
                 </button> 
             </form>
+            <NavigatePrompt 
+                promptText="Already have an account?" 
+                linkText="Login" 
+                onClick={navigateToLogin}
+            />
         </div>
     )
 }
