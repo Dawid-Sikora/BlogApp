@@ -1,1 +1,8 @@
-Blog app created in combination Spring with ReactJS.
+# Blog Application
+
+My private blog application project. 
+
+## Screenshots
+
+### Login panel
+![Login Screen](./images/login.jpg)
